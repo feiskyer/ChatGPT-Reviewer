@@ -18,15 +18,14 @@ if os.getenv("OPENAI_API_KEY") == "":
 with open('/github/workflow/event.json', encoding='utf-8') as ev:
     payload = json.load(ev)
 
-event_type = getEventType(payload)
-print(f"Evaluating {event_type} event")
+eventType = getEventType(payload)
+print(f"Evaluating {eventType} event")
 
-if event_type == EVENT_TYPE_PULL_REQUEST:
+if eventType == EVENT_TYPE_PULL_REQUEST:
     pr, changes = getPullRequest(payload)
     prompt = getPRReviewPrompt(pr.title, pr.body, changes)
-    print(prompt)
     completion_text = getCompletion(prompt)
-    print(completion_text)
-    pr.create_issue_comment(completion_text)
+    reviewComments = f'''@{pr.user.login} Thanks for your PR! Here are some review comments from ChatGPT:\n\n''' + completion_text
+    pr.create_issue_comment(reviewComments)
 else:
-    print(f"{event_type} event is not supported yet, skipping")
+    print(f"{eventType} event is not supported yet, skipping")

@@ -1,11 +1,12 @@
 name: Test
 
 on:
-  push:
-    branches:
-      - "main"
+  # push:
+  #   branches:
+  #     - "main"
   pull_request:
-  issue_comment:
+  # issue_comment:
+  # pull_request_review_comment:
 
 
 jobs:
