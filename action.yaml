@@ -1,0 +1,16 @@
+name: "ChatGPT Reviewer"
+author: "Pengfei Ni"
+description: "Automated pull requests reviewing and issues triaging with ChatGPT"
+inputs:
+  GITHUB_TOKEN:
+    description: "Github token used to send out review comments"
+    required: true
+  OPENAI_API_KEY:
+    description: "API key used to invoke OpenAI"
+    required: true
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+branding:
+  icon: 'compass'
+  color: 'blue'
