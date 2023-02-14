@@ -45,6 +45,9 @@ Title: {title}
 
 Body: {body}
 
-Changes: {changes}
+Changes:
+```
+{changes}
+```
 '''
     return prompt
