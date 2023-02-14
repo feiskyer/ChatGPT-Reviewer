@@ -25,3 +25,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 ```
+
+## Samples
+
+The ChatGPT reviewer PRs are also getting reviewed by ChatGPT, refer [here](https://github.com/feiskyer/ChatGPT-Reviewer/pull/1#issuecomment-1429585739) for the sample review comments.
