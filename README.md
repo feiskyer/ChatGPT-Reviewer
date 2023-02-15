@@ -19,7 +19,7 @@ jobs:
     name: ChatGPT Review
     runs-on: ubuntu-latest
     steps:
-    - uses: feiskyer/ChatGPT-Reviewer@v0.2
+    - uses: feiskyer/ChatGPT-Reviewer@v0.3
       name: ChatGPT Review
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -28,4 +28,4 @@ jobs:
 
 ## Samples
 
-The ChatGPT reviewer PRs are also getting reviewed by ChatGPT, refer [here](https://github.com/feiskyer/ChatGPT-Reviewer/pull/1#issuecomment-1429585739) for the sample review comments.
+The ChatGPT reviewer PRs are also getting reviewed by ChatGPT, refer the [pull requests](https://github.com/feiskyer/ChatGPT-Reviewer/pulls?q=is%3Apr) for the sample review comments.
