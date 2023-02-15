@@ -1,12 +1,17 @@
-# encoding: utf-8
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
 import os
 import backoff
 import openai
 import tiktoken
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-ENCODER = tiktoken.get_encoding("gpt2")
 MODEL = "text-davinci-003"
+# ENCODER = tiktoken.get_encoding("gpt2")
+ENCODER = tiktoken.encoding_for_model(MODEL)
+MAX_TOKENS = 4097
+MIN_TOKENS = 256
 
 
 @backoff.on_exception(backoff.expo,
@@ -24,8 +29,7 @@ def getCompletion(prompt) -> str:
         frequency_penalty=0,
         presence_penalty=0,
         request_timeout=100,
-        max_tokens=4000 - len(ENCODER.encode(prompt)),
-        stop="\n\n\n",
+        max_tokens=MAX_TOKENS - len(ENCODER.encode(prompt)),
         stream=True)
 
     completion_text = ''
@@ -51,3 +55,48 @@ Changes:
 ```
 '''
     return prompt
+
+
+def cutChanges(chunk):
+    '''Cut the changes to fit the max tokens'''
+    # TODO: it is not a good idea to cut the contents, need figure out a better way
+    chunk = 'diff --git' + chunk
+    if len(ENCODER.encode(chunk)) < MAX_TOKENS - MIN_TOKENS:
+        return chunk
+
+    lines = chunk.splitlines()
+    filename = lines[0]
+    print(
+        f"The changes for {filename} is too long, contents would be cut to fit the max tokens")
+    i = len(lines)
+    while i > 0:
+        i -= 1
+        line = '\n'.join(lines[:i])
+        if len(ENCODER.encode(line)) < MAX_TOKENS - MIN_TOKENS:
+            return line
+    return ''
+
+
+def getFileName(chunk):
+    '''Get the file name from the chunk'''
+    return chunk.splitlines()[0]
+
+
+def getSplittedCompletionForDiff(title, body, changes) -> str:
+    '''Split the changes by changed files to fit the max tokens'''
+    chunks = [cutChanges(chunk)
+              for chunk in changes.split('diff --git') if chunk != '']
+    prompts = [getPRReviewPrompt(title, body, chunk) for chunk in chunks]
+    completions = [getCompletion(prompt) for prompt in prompts]
+    filenames = [getFileName(chunk) for chunk in chunks]
+    return [f"Here are review comments for {filenames[i]}:\n{completions[i]}" for i in range(len(chunks))]
+
+
+def getCompletionForDiff(title, body, changes):
+    '''Get completion for a PR diff'''
+    if len(ENCODER.encode(changes)) < MAX_TOKENS - MIN_TOKENS:
+        prompt = getPRReviewPrompt(title, body, changes)
+        completion = getCompletion(prompt)
+        return [completion]
+
+    return getSplittedCompletionForDiff(title, body, changes)

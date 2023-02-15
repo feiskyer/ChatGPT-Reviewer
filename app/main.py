@@ -1,5 +1,6 @@
-#!/usr/bin/env python
-# encoding: utf-8
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
 import json
 import os
 from completion import *
@@ -23,9 +24,10 @@ print(f"Evaluating {eventType} event")
 
 if eventType == EVENT_TYPE_PULL_REQUEST:
     pr, changes = getPullRequest(payload)
-    prompt = getPRReviewPrompt(pr.title, pr.body, changes)
-    completion_text = getCompletion(prompt)
-    reviewComments = f'''@{pr.user.login} Thanks for your PR! Here are some review comments from ChatGPT:\n\n''' + completion_text
+    comments = getCompletionForDiff(pr.title, pr.body, changes)
+    reviewComments = f'''@{pr.user.login} Thanks for your PR!\n\n'''
+    for prompt in comments:
+        reviewComments += prompt + "\n\n"
     pr.create_issue_comment(reviewComments)
 else:
     print(f"{eventType} event is not supported yet, skipping")
