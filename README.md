@@ -29,3 +29,11 @@ jobs:
 ## Samples
 
 The ChatGPT reviewer PRs are also getting reviewed by ChatGPT, refer the [pull requests](https://github.com/feiskyer/ChatGPT-Reviewer/pulls?q=is%3Apr) for the sample review comments.
+
+## Special notes for public repository forks
+
+In order to protect public repositories for malicious users, Github runs all pull request workflows raised from repository forks with a read-only token and no access to secrets.
+
+`pull_request_target` event could be used in such cases, which would run the workflow in the context of the base of the pull request (rather than in the context of the merge commit, as the `pull_request` event does).
+
+Refer Github docs [here](https://docs.github.com/en/github-ae@latest/actions/using-workflows/events-that-trigger-workflows#pull_request_target) for more details of `pull_request_target` event.
