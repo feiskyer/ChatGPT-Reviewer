@@ -8,9 +8,41 @@ inputs:
   OPENAI_API_KEY:
     description: "API key used to invoke OpenAI"
     required: true
+  model:
+    description: "OpenAI model name"
+    default: "text-davinci-003"
+    required: false
+  temperature:
+    description: "Temperature for the model"
+    default: '0.2'
+    required: false
+  frequency_penalty:
+    description: "Frequency penalty for the model"
+    default: '0'
+    required: false
+  presence_penalty:
+    description: "Presence penalty for the model"
+    default: '0'
+    required: false
+  review_per_file:
+    description: "Send out review requests per file"
+    default: 'False'
+    required: false
+  comment_per_file:
+    description: "Post review comments per file"
+    default: 'False'
+    required: false
+
 runs:
   using: 'docker'
   image: 'Dockerfile'
+  args:
+  - --model=${{ inputs.model }}
+  - --temperature=${{ inputs.temperature }}
+  - --frequency-penalty=${{ inputs.frequency_penalty }}
+  - --presence-penalty=${{ inputs.presence_penalty }}
+  - --review-per-file=${{ inputs.review_per_file }}
+  - --comment-per-file=${{ inputs.comment_per_file }}
 branding:
   icon: 'compass'
   color: 'blue'

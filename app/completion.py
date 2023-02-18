@@ -7,42 +7,48 @@ import openai
 import tiktoken
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-MODEL = "text-davinci-003"
-# ENCODER = tiktoken.get_encoding("gpt2")
-ENCODER = tiktoken.encoding_for_model(MODEL)
-MAX_TOKENS = 4097
-MIN_TOKENS = 256
 
 
-@backoff.on_exception(backoff.expo,
-                      (openai.error.RateLimitError,
-                       openai.error.APIConnectionError,
-                       openai.error.ServiceUnavailableError),
-                      max_time=300)
-def getCompletion(prompt) -> str:
-    '''Invoke OpenAI API to get completion text'''
-    response = openai.Completion.create(
-        model=MODEL,
-        prompt=prompt,
-        temperature=0,
-        best_of=1,
-        frequency_penalty=0,
-        presence_penalty=0,
-        request_timeout=100,
-        max_tokens=MAX_TOKENS - len(ENCODER.encode(prompt)),
-        stream=True)
+class OpenAIClient:
+    '''OpenAI API client'''
 
-    completion_text = ''
-    for event in response:
-        if event["choices"] is not None and len(event["choices"]) > 0:
-            completion_text += event["choices"][0]["text"]
-    return completion_text
+    def __init__(self, model, temperature, frequency_penalty, presence_penalty,
+                 max_tokens=4097, min_tokens=256):
+        self.model = model
+        self.temperature = temperature
+        self.frequency_penalty = frequency_penalty
+        self.presence_penalty = presence_penalty
+        self.encoder = tiktoken.encoding_for_model(model)
+        self.max_tokens = max_tokens
+        self.min_tokens = min_tokens
 
+    @backoff.on_exception(backoff.expo,
+                          (openai.error.RateLimitError,
+                           openai.error.APIConnectionError,
+                           openai.error.ServiceUnavailableError),
+                          max_time=300)
+    def get_completion(self, prompt) -> str:
+        '''Invoke OpenAI API to get completion text'''
+        response = openai.Completion.create(
+            model=self.model,
+            prompt=prompt,
+            temperature=self.temperature,
+            best_of=1,
+            frequency_penalty=self.frequency_penalty,
+            presence_penalty=self.presence_penalty,
+            request_timeout=100,
+            max_tokens=self.max_tokens - len(self.encoder.encode(prompt)),
+            stream=True)
 
-def getPRReviewPrompt(title, body, changes) -> str:
-    '''Generate a prompt for a PR review'''
-    prompt = f'''I want you to act as a tech reviewer for pull requests and you will provide me with an in-depth review, including the problems and suggestions.
+        completion_text = ''
+        for event in response:
+            if event["choices"] is not None and len(event["choices"]) > 0:
+                completion_text += event["choices"][0]["text"]
+        return completion_text
 
+    def get_pr_prompt(self, title, body, changes) -> str:
+        '''Generate a prompt for a PR review'''
+        prompt = f'''I want you to act as a tech reviewer for pull requests and you will provide me with an in-depth review, including the problems and suggestions.
 Here are the title, body and changes for this pull request:
 
 Title: {title}
@@ -53,50 +59,21 @@ Changes:
 ```
 {changes}
 ```
-'''
-    return prompt
+    '''
+        return prompt
 
+    def get_file_prompt(self, title, body, filename, changes) -> str:
+        '''Generate a prompt for a file review'''
+        prompt = f'''I want you to act as a tech reviewer for pull requests changes in file {filename} and you will provide me with an in-depth review, including the problems and suggestions.
+Here are the title and body of this pull requests:
 
-def cutChanges(chunk):
-    '''Cut the changes to fit the max tokens'''
-    # TODO: it is not a good idea to cut the contents, need figure out a better way
-    chunk = 'diff --git' + chunk
-    if len(ENCODER.encode(chunk)) < MAX_TOKENS - MIN_TOKENS:
-        return chunk
+Title: {title}
 
-    lines = chunk.splitlines()
-    filename = lines[0]
-    print(
-        f"The changes for {filename} is too long, contents would be cut to fit the max tokens")
-    i = len(lines)
-    while i > 0:
-        i -= 1
-        line = '\n'.join(lines[:i])
-        if len(ENCODER.encode(line)) < MAX_TOKENS - MIN_TOKENS:
-            return line
-    return ''
+Body: {body}
 
-
-def getFileName(chunk):
-    '''Get the file name from the chunk'''
-    return chunk.splitlines()[0]
-
-
-def getSplittedCompletionForDiff(title, body, changes) -> str:
-    '''Split the changes by changed files to fit the max tokens'''
-    chunks = [cutChanges(chunk)
-              for chunk in changes.split('diff --git') if chunk != '']
-    prompts = [getPRReviewPrompt(title, body, chunk) for chunk in chunks]
-    completions = [getCompletion(prompt) for prompt in prompts]
-    filenames = [getFileName(chunk) for chunk in chunks]
-    return [f"Here are review comments for {filenames[i]}:\n{completions[i]}" for i in range(len(chunks))]
-
-
-def getCompletionForDiff(title, body, changes):
-    '''Get completion for a PR diff'''
-    if len(ENCODER.encode(changes)) < MAX_TOKENS - MIN_TOKENS:
-        prompt = getPRReviewPrompt(title, body, changes)
-        completion = getCompletion(prompt)
-        return [completion]
-
-    return getSplittedCompletionForDiff(title, body, changes)
+And bellowing are changes for file {filename}:
+```
+{changes}
+```
+    '''
+        return prompt

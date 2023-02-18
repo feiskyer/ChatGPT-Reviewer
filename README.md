@@ -19,13 +19,41 @@ jobs:
     name: ChatGPT Review
     runs-on: ubuntu-latest
     steps:
-    - uses: feiskyer/ChatGPT-Reviewer@v0.3
+    - uses: feiskyer/ChatGPT-Reviewer@v0
       name: ChatGPT Review
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      # Optional configurations:
+      # with:
+      #   model: "text-davinci-003"
+      #   temperature: 0.2
+      #   review_per_file: true
+      #   comment_per_file: true
 ```
+
+## Configurations
+
+|Parameter|Description|Required|Default|
+|---------|-----------|--------|-------|
+|GITHUB_TOKEN|Github token used to send out review comments|true|""|
+|OPENAI_API_KEY|API key used to invoke OpenAI|true|""|
+|model|OpenAI model name|false|text-davinci-003|
+|temperature|Temperature for the model|false|0.2|
+|frequency_penalty|Frequency penalty for the model|false|0|
+|presence_penalty|Presence penalty for the model|false|0|
+|review_per_file|Send out review requests per file|false|False|
+|comment_per_file|Post review comments per file|false|False
+
 
 ## Samples
 
 The ChatGPT reviewer PRs are also getting reviewed by ChatGPT, refer the [pull requests](https://github.com/feiskyer/ChatGPT-Reviewer/pulls?q=is%3Apr) for the sample review comments.
+
+## Special notes for public repository forks
+
+In order to protect public repositories for malicious users, Github runs all pull request workflows raised from repository forks with a read-only token and no access to secrets.
+
+`pull_request_target` event could be used in such cases, which would run the workflow in the context of the base of the pull request (rather than in the context of the merge commit, as the `pull_request` event does).
+
+Refer Github docs [here](https://docs.github.com/en/github-ae@latest/actions/using-workflows/events-that-trigger-workflows#pull_request_target) for more details of `pull_request_target` event.
