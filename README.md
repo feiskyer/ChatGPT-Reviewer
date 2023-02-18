@@ -19,12 +19,32 @@ jobs:
     name: ChatGPT Review
     runs-on: ubuntu-latest
     steps:
-    - uses: feiskyer/ChatGPT-Reviewer@v0.3
+    - uses: feiskyer/ChatGPT-Reviewer@v0
       name: ChatGPT Review
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      # Optional configurations:
+      # with:
+      #   model: "text-davinci-003"
+      #   temperature: 0.2
+      #   review_per_file: true
+      #   comment_per_file: true
 ```
+
+## Configurations
+
+|Parameter|Description|Required|Default|
+|---------|-----------|--------|-------|
+|GITHUB_TOKEN|Github token used to send out review comments|true|""|
+|OPENAI_API_KEY|API key used to invoke OpenAI|true|""|
+|model|OpenAI model name|false|text-davinci-003|
+|temperature|Temperature for the model|false|0.2|
+|frequency_penalty|Frequency penalty for the model|false|0|
+|presence_penalty|Presence penalty for the model|false|0|
+|review_per_file|Send out review requests per file|false|False|
+|comment_per_file|Post review comments per file|false|False
+
 
 ## Samples
 

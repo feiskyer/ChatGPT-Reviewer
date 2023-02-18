@@ -3,31 +3,66 @@
 #
 import json
 import os
-from completion import *
-from githubs import *
+import argparse
+import completion
+import githubs
 
 
+# Check required environment variables
 if os.getenv("GITHUB_TOKEN") == "":
     print("Please set the GITHUB_TOKEN environment variable")
     exit(1)
-
 if os.getenv("OPENAI_API_KEY") == "":
     print("Please set the OPENAI_API_KEY environment variable")
     exit(1)
 
+# Parse arguments
+parser = argparse.ArgumentParser(
+    description='Automated pull requests reviewing and issues triaging with ChatGPT')
+parser.add_argument("--model",
+                    help="OpenAI model",
+                    type=str, default="text-davinci-003")
+parser.add_argument("--temperature",
+                    help="Temperature for the model",
+                    type=float, default=0.2)
+parser.add_argument("--frequency-penalty",
+                    help="Frequency penalty for the model",
+                    type=int, default=0)
+parser.add_argument("--presence-penalty",
+                    help="Presence penalty for the model",
+                    type=int, default=0)
+parser.add_argument("--review-per-file",
+                    help="Send out review requests per file",
+                    type=bool, default=False)
+parser.add_argument("--comment-per-file",
+                    help="Post review comments per file",
+                    type=bool, default=False)
+args = parser.parse_args()
 
+
+# Initialize clients
+openai_client = completion.OpenAIClient(
+    model=args.model,
+    temperature=args.temperature,
+    frequency_penalty=args.frequency_penalty,
+    presence_penalty=args.presence_penalty)
+github_client = githubs.GithubClient(
+    openai_client=openai_client,
+    review_per_file=args.review_per_file,
+    comment_per_file=args.comment_per_file
+)
+
+
+# Load github workflow event
 with open('/github/workflow/event.json', encoding='utf-8') as ev:
     payload = json.load(ev)
-
-eventType = getEventType(payload)
+eventType = github_client.get_event_type(payload)
 print(f"Evaluating {eventType} event")
 
-if eventType == EVENT_TYPE_PULL_REQUEST:
-    pr, changes = getPullRequest(payload)
-    comments = getCompletionForDiff(pr.title, pr.body, changes)
-    reviewComments = f'''@{pr.user.login} Thanks for your PR!\n\n'''
-    for prompt in comments:
-        reviewComments += prompt + "\n\n"
-    pr.create_issue_comment(reviewComments)
-else:
-    print(f"{eventType} event is not supported yet, skipping")
+
+# Review the changes via ChatGPT
+match eventType:
+    case githubs.EVENT_TYPE_PULL_REQUEST:
+        github_client.review_pr(payload)
+    case _:
+        print(f"{eventType} event is not supported yet, skipping")
