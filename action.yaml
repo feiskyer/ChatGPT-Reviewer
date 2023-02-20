@@ -12,6 +12,10 @@ inputs:
     description: "OpenAI model name"
     default: "text-davinci-003"
     required: false
+  blocking:
+    description: "Blocking the pull requests on OpenAI failures"
+    default: 'False'
+    required: false
   temperature:
     description: "Temperature for the model"
     default: '0.2'
@@ -43,6 +47,7 @@ runs:
   - --presence-penalty=${{ inputs.presence_penalty }}
   - --review-per-file=${{ inputs.review_per_file }}
   - --comment-per-file=${{ inputs.comment_per_file }}
+  - --blocking=${{ inputs.blocking }}
 branding:
   icon: 'compass'
   color: 'blue'

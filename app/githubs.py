@@ -16,13 +16,14 @@ EVENT_TYPE_OTHER = "other"
 class GithubClient:
     '''Github API client'''
 
-    def __init__(self, openai_client, review_per_file=False, comment_per_file=False):
+    def __init__(self, openai_client, review_per_file=False, comment_per_file=False, blocking=False):
         self.openai_client = openai_client
         self.github_token = os.getenv("GITHUB_TOKEN")
         self.github_client = Github(self.github_token)
         self.review_tokens = self.openai_client.max_tokens - self.openai_client.min_tokens
         self.review_per_file = review_per_file
         self.comment_per_file = comment_per_file
+        self.blocking = blocking
 
     def get_event_type(self, payload) -> str:
         '''Determine the type of event'''
@@ -70,6 +71,18 @@ class GithubClient:
                 return line
         return ''
 
+    def get_completion(self, prompt) -> str:
+        '''Get the completion'''
+        try:
+            completion = self.openai_client.get_completion(prompt)
+            return completion
+        except Exception as e:
+            if self.blocking:
+                raise e
+            else:
+                print(f"OpenAI failed on prompt {prompt} with exception {e}")
+                return ''
+
     def review_pr(self, payload):
         '''Review a PR'''
         pr, changes = self.get_pull_request(payload)
@@ -77,9 +90,10 @@ class GithubClient:
             # Review the full PR changes together
             prompt = self.openai_client.get_pr_prompt(
                 pr.title, pr.body, changes)
-            completion = self.openai_client.get_completion(prompt)
-            reviewComments = f'''@{pr.user.login} Thanks for your contributions!\n\n{completion}'''
-            pr.create_issue_comment(reviewComments)
+            completion = self.get_completion(prompt)
+            if completion != '':
+                reviewComments = f'''@{pr.user.login} Thanks for your contributions!\n\n{completion}'''
+                pr.create_issue_comment(reviewComments)
             return
 
         # Review each file changes separately
@@ -90,7 +104,9 @@ class GithubClient:
                 file.previous_filename, file.filename, file.patch)
             prompt = self.openai_client.get_file_prompt(
                 pr.title, pr.body, file.filename, file_changes)
-            completion = self.openai_client.get_completion(prompt)
+            completion = self.get_completion(prompt)
+            if completion == '':
+                continue
             if self.comment_per_file:
                 # Create a review comment on the file
                 reviewComments = f'''@{pr.user.login} Thanks for your contributions!\n\n{completion}'''
