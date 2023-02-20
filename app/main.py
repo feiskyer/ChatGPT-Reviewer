@@ -4,6 +4,7 @@
 import json
 import os
 import argparse
+import distutils
 import completion
 import githubs
 
@@ -33,13 +34,13 @@ parser.add_argument("--presence-penalty",
                     type=int, default=0)
 parser.add_argument("--review-per-file",
                     help="Send out review requests per file",
-                    type=bool, default=False)
+                    type=distutils.util.strtobool, default=False)
 parser.add_argument("--comment-per-file",
                     help="Post review comments per file",
-                    type=bool, default=False)
+                    type=distutils.util.strtobool, default=False)
 parser.add_argument("--blocking",
                     help="Blocking the pull requests on OpenAI failures",
-                    type=bool, default=False)
+                    type=distutils.util.strtobool, default=False)
 args = parser.parse_args()
 
 
