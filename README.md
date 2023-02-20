@@ -38,6 +38,7 @@ jobs:
 |---------|-----------|--------|-------|
 |GITHUB_TOKEN|Github token used to send out review comments|true|""|
 |OPENAI_API_KEY|API key used to invoke OpenAI|true|""|
+|blocking|Blocking the pull requests on OpenAI failures|false|False|
 |model|OpenAI model name|false|text-davinci-003|
 |temperature|Temperature for the model|false|0.2|
 |frequency_penalty|Frequency penalty for the model|false|0|

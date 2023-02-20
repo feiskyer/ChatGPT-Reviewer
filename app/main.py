@@ -37,6 +37,9 @@ parser.add_argument("--review-per-file",
 parser.add_argument("--comment-per-file",
                     help="Post review comments per file",
                     type=bool, default=False)
+parser.add_argument("--blocking",
+                    help="Blocking the pull requests on OpenAI failures",
+                    type=bool, default=False)
 args = parser.parse_args()
 
 
@@ -49,8 +52,8 @@ openai_client = completion.OpenAIClient(
 github_client = githubs.GithubClient(
     openai_client=openai_client,
     review_per_file=args.review_per_file,
-    comment_per_file=args.comment_per_file
-)
+    comment_per_file=args.comment_per_file,
+    blocking=args.blocking)
 
 
 # Load github workflow event
