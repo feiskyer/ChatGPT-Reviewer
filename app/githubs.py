@@ -116,7 +116,7 @@ class GithubClient:
                                          position=1)
             else:
                 reviews = reviews + \
-                    [f"**Here are review comments for file {file.filename}:**\n{completion}"]
+                    [f"**Here are review comments for file {file.filename}:**\n{completion}\n\n"]
 
         if len(reviews) > 0:
             # Create a review comment on the PR
