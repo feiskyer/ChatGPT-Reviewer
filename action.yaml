@@ -34,7 +34,7 @@ inputs:
     required: false
   comment_per_file:
     description: "Post review comments per file"
-    default: 'False'
+    default: 'True'
     required: false
 
 runs:

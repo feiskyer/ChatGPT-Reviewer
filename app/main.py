@@ -37,7 +37,7 @@ parser.add_argument("--review-per-file",
                     type=distutils.util.strtobool, default=False)
 parser.add_argument("--comment-per-file",
                     help="Post review comments per file",
-                    type=distutils.util.strtobool, default=False)
+                    type=distutils.util.strtobool, default=True)
 parser.add_argument("--blocking",
                     help="Blocking the pull requests on OpenAI failures",
                     type=distutils.util.strtobool, default=False)

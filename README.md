@@ -43,8 +43,8 @@ jobs:
 |temperature|Temperature for the model|false|0.2|
 |frequency_penalty|Frequency penalty for the model|false|0|
 |presence_penalty|Presence penalty for the model|false|0|
-|review_per_file|Send out review requests per file|false|False|
-|comment_per_file|Post review comments per file|false|False
+|review_per_file|Send out review requests per file|false|Large changes would be reviewed per file automatically|
+|comment_per_file|Post review comments per file|false|True
 
 
 ## Samples
