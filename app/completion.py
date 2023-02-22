@@ -48,7 +48,12 @@ class OpenAIClient:
 
     def get_pr_prompt(self, title, body, changes) -> str:
         '''Generate a prompt for a PR review'''
-        prompt = f'''I want you to act as a tech reviewer for pull requests and you will provide me with an in-depth review, including the problems and suggestions.
+        prompt = f'''As a tech reviewer, please provide an in-depth review of the following pull request, paying close attention to the following:
+
+* Review the title, body, and changes made in the pull request.
+* Identify any problems and provide clear descriptions and suggestions for how to address them.
+* Offer constructive suggestions for optimizing the changes made in the pull request.
+
 Here are the title, body and changes for this pull request:
 
 Title: {title}
@@ -64,8 +69,14 @@ Changes:
 
     def get_file_prompt(self, title, body, filename, changes) -> str:
         '''Generate a prompt for a file review'''
-        prompt = f'''I want you to act as a tech reviewer for pull requests changes in file {filename} and you will provide me with an in-depth review, including the problems and suggestions.
-Here are the title and body of this pull requests:
+        prompt = f'''As a tech reviewer, please provide an in-depth review of the following pull request for file {filename}, paying close attention to the following:
+
+* Review the title, body, and changes made in the pull request.
+* Identify any problems and provide clear descriptions and suggestions for how to address them.
+* Offer constructive suggestions for optimizing the changes made in the pull request.
+* Avoid providing unnecessary explanations or summaries that may delay the review process.
+* Provide feedback in a concise and clear manner to help expedite the review process.
+* No need for thanking in the review message.
 
 Title: {title}
 
