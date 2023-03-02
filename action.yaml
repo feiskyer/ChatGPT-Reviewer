@@ -10,7 +10,7 @@ inputs:
     required: true
   model:
     description: "OpenAI model name"
-    default: "text-davinci-003"
+    default: "gpt-3.5-turbo"
     required: false
   blocking:
     description: "Blocking the pull requests on OpenAI failures"
