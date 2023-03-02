@@ -22,7 +22,7 @@ parser = argparse.ArgumentParser(
     description='Automated pull requests reviewing and issues triaging with ChatGPT')
 parser.add_argument("--model",
                     help="OpenAI model",
-                    type=str, default="text-davinci-003")
+                    type=str, default="gpt-3.5-turbo")
 parser.add_argument("--temperature",
                     help="Temperature for the model",
                     type=float, default=0.2)

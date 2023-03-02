@@ -26,7 +26,7 @@ jobs:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       # Optional configurations:
       # with:
-      #   model: "text-davinci-003"
+      #   model: "gpt-3.5-turbo"
       #   temperature: 0.2
       #   review_per_file: true
       #   comment_per_file: true
@@ -39,7 +39,7 @@ jobs:
 |GITHUB_TOKEN|Github token used to send out review comments|true|""|
 |OPENAI_API_KEY|API key used to invoke OpenAI|true|""|
 |blocking|Blocking the pull requests on OpenAI failures|false|False|
-|model|OpenAI model name|false|text-davinci-003|
+|model|OpenAI model name|false|gpt-3.5-turbo|
 |temperature|Temperature for the model|false|0.2|
 |frequency_penalty|Frequency penalty for the model|false|0|
 |presence_penalty|Presence penalty for the model|false|0|
