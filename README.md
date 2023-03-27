@@ -24,6 +24,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        # OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
       # Optional configurations:
       # with:
       #   model: "gpt-3.5-turbo"
@@ -38,6 +39,7 @@ jobs:
 |---------|-----------|--------|-------|
 |GITHUB_TOKEN|Github token used to send out review comments|true|""|
 |OPENAI_API_KEY|API key used to invoke OpenAI|true|""|
+|OPENAI_API_BASE|API based used to access Azure OpenAI|false|""|
 |blocking|Blocking the pull requests on OpenAI failures|false|False|
 |model|OpenAI model name|false|gpt-3.5-turbo|
 |temperature|Temperature for the model|false|0.2|

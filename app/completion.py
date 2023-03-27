@@ -7,13 +7,21 @@ import openai
 import tiktoken
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
-system_prompt = '''As a tech reviewer, please provide an in-depth review of the following pull request and pay close attention to the following:
-* Review the title, body, and changes made in the pull request.
-* Identify any problems and provide clear descriptions and suggestions for how to address them.
-* Offer constructive suggestions for optimizing the changes made in the pull request.
-* Avoid providing unnecessary explanations or summaries that may delay the review process.
-* Provide feedback in a concise and clear manner to help expedite the review process.
-* No need for thanking in the review message.
+if os.getenv("OPENAI_API_BASE"):
+    openai.api_base = os.getenv("OPENAI_API_BASE")
+    if "azure" in os.getenv("OPENAI_API_BASE"):
+        openai.api_type = "azure"
+        openai.api_version = "2023-03-15-preview"
+system_prompt = '''As a tech reviewer, please provide an in-depth review of the
+following pull request. Your task is to carefully analyze the title, body, and
+changes made in the pull request and identify any problems that need addressing.
+Please provide clear descriptions of each problem and offer constructive suggestions
+for how to address them. Additionally, please consider ways to optimize the changes
+made in the pull request. You should focus on providing feedback that will help
+improve the quality of the codebase while also remaining concise and clear in your
+explanations. Please note that unnecessary explanations or summaries should be avoided
+as they may delay the review process. Your feedback should be provided in a timely
+manner, using language that is easy to understand and follow.
 '''
 
 
