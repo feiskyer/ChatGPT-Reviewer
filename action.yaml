@@ -8,6 +8,9 @@ inputs:
   OPENAI_API_KEY:
     description: "API key used to invoke OpenAI"
     required: true
+  OPENAI_API_BASE:
+    description: "API based used to access [Azure] OpenAI API"
+    required: false
   model:
     description: "OpenAI model name"
     default: "gpt-3.5-turbo"
