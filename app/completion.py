@@ -37,6 +37,9 @@ class OpenAIClient:
         self.encoder = tiktoken.get_encoding("gpt2")
         self.max_tokens = max_tokens
         self.min_tokens = min_tokens
+        self.openai_kwargs = {'model': self.model}
+        if openai.api_type == "azure":
+            self.openai_kwargs = {'engine': self.model}
 
     @backoff.on_exception(backoff.expo,
                           (openai.error.RateLimitError,
@@ -56,14 +59,13 @@ class OpenAIClient:
             {"role": "user", "content": prompt},
         ]
         response = openai.ChatCompletion.create(
-            model=self.model,
             messages=messages,
             temperature=self.temperature,
             frequency_penalty=self.frequency_penalty,
             presence_penalty=self.presence_penalty,
             request_timeout=100,
             max_tokens=self.max_tokens - len(self.encoder.encode(f'{system_prompt}\n{prompt}')),
-            stream=True)
+            stream=True, **self.openai_kwargs)
 
         completion_text = ''
         for event in response:
@@ -79,7 +81,6 @@ class OpenAIClient:
         '''Invoke OpenAI API to get text completion'''
         prompt_message = f'{system_prompt}\n{prompt}'
         response = openai.Completion.create(
-            model=self.model,
             prompt=prompt_message,
             temperature=self.temperature,
             best_of=1,
@@ -87,7 +88,7 @@ class OpenAIClient:
             presence_penalty=self.presence_penalty,
             request_timeout=100,
             max_tokens=self.max_tokens - len(self.encoder.encode(prompt_message)),
-            stream=True)
+            stream=True, **self.openai_kwargs)
 
         completion_text = ''
         for event in response:
