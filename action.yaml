@@ -1,5 +1,5 @@
 name: "ChatGPT Reviewer"
-author: "Pengfei Ni"
+author: "RegScale"
 description: "Automated pull requests reviewing and issues triaging with ChatGPT"
 inputs:
   GITHUB_TOKEN:
