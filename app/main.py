@@ -7,7 +7,7 @@ import argparse
 import distutils
 import completion
 import githubs
-
+from prompts import default_system_prompt
 
 # Check required environment variables
 if os.getenv("GITHUB_TOKEN") == "":
@@ -41,6 +41,9 @@ parser.add_argument("--comment-per-file",
 parser.add_argument("--blocking",
                     help="Blocking the pull requests on OpenAI failures",
                     type=distutils.util.strtobool, default=False)
+parser.add_argument("--system-prompt",
+                    help="System prompt for the model",
+                    type=str, default=default_system_prompt)
 args = parser.parse_args()
 
 
