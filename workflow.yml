@@ -1,0 +1,54 @@
+name: Run Chat GPT PR reviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  chatgpt-review:
+    name: ChatGPT Review
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install chatgpt-reviewer
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt install git -y
+          git clone https://github.com/dmdhrumilmistry/ChatGPT-Reviewer.git --depth=1 /tmp/ChatGPT-Reviewer
+          python3 -m venv .env
+          source .env/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install -r /tmp/ChatGPT-Reviewer/app/requirements.txt
+
+      - name: Review PR
+        run: |
+          source .env/bin/activate
+          cd /tmp/ChatGPT-Reviewer/app/
+          python3 main.py \
+            --model $model \
+            --temperature $temperature \
+            --frequency-penalty $frequency_penalty \
+            --presence-penalty $presence_penalty \
+            --review-per-file $review_per_file \
+            --comment-per-file $comment_per_file
+        env: 
+          GITHUB_REPOSITORY: ${{ github.repository }} # ${{ github.event.pull_request.number }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY}}
+          model: 'gpt-3.5-turbo'
+          # OPENAI_API_BASE: 'gpt-4' # 'gpt-3.5-turbo'
+          blocking: 'False'
+          temperature: '0.2'
+          frequency_penalty: '0'
+          presence_penalty: '0'
+          review_per_file: 'False'
+          comment_per_file: 'True'
