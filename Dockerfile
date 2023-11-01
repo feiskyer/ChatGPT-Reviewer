@@ -1,4 +1,4 @@
-FROM python:3-alpine
+FROM python:3.9.18-slim-bullseye
 
 LABEL "com.github.actions.name"="ChatGPT Reviewer"
 LABEL "com.github.actions.description"="Automated pull requests reviewing and issues triaging with ChatGPT"
