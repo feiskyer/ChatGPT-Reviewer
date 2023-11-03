@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 import os
+import re
 import requests
 from github import Github
 
@@ -110,10 +111,11 @@ class GithubClient:
             if self.comment_per_file:
                 # Create a review comment on the file
                 reviewComments = f'''@{pr.user.login} Thanks for your contributions!\n\n{completion}'''
+                line_no = re.search('\@\@ \-(\d+),', file.patch).group(1)
                 pr.create_review_comment(body=reviewComments,
-                                         commit_id=list(pr.get_commits())[-1],
+                                         commit=list(pr.get_commits())[-1],
                                          path=file.filename,
-                                         position=1)
+                                         line=int(line_no))
             else:
                 reviews = reviews + \
                     [f"**Here are review comments for file {file.filename}:**\n{completion}\n\n"]
