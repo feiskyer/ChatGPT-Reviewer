@@ -58,7 +58,11 @@ github_client = githubs.GithubClient(
 
 
 # Load github workflow event
-with open('/github/workflow/event.json', encoding='utf-8') as ev:
+event_file_path = os.environ.get('GITHUB_EVENT_PATH')
+if not event_file_path:
+    raise FileNotFoundError('Event File Path not found!')
+
+with open(event_file_path, encoding='utf-8') as ev:
     payload = json.load(ev)
 eventType = github_client.get_event_type(payload)
 print(f"Evaluating {eventType} event")
