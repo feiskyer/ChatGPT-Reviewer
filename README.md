@@ -48,7 +48,6 @@ jobs:
 |review_per_file|Send out review requests per file|false|Large changes would be reviewed per file automatically|
 |comment_per_file|Post review comments per file|false|True
 
-
 ## Samples
 
 The ChatGPT reviewer PRs are also getting reviewed by ChatGPT, refer the [pull requests](https://github.com/feiskyer/ChatGPT-Reviewer/pulls?q=is%3Apr) for the sample review comments.
