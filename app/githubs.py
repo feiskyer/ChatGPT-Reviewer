@@ -116,7 +116,7 @@ class GithubClient:
                 continue
             if self.comment_per_file:
                 # Create a review comment on the file
-                reviewComments = f'''@{pr.user.login} Thanks for your contributions!\n\n{completion}'''
+                reviewComments = f'''@{pr.user.login} PR has been reviewed successfully! Details are listed below:\n\n{completion}'''
                 pr.create_review_comment(body=reviewComments,
                                          commit_id=list(pr.get_commits())[-1],
                                          path=file.filename,
@@ -127,5 +127,5 @@ class GithubClient:
 
         if len(reviews) > 0:
             # Create a review comment on the PR
-            reviewComments = f'''@{pr.user.login} Thanks for your contributions!\n\n{''.join(reviews)}'''
+            reviewComments = f'''@{pr.user.login} PR has been reviewed successfully! Details are listed below:\n\n{''.join(reviews)}'''
             pr.create_issue_comment(reviewComments)
