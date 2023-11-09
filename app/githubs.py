@@ -4,6 +4,7 @@
 import os
 import requests
 from github import Github
+import re
 
 
 # List of event types
@@ -12,6 +13,8 @@ EVENT_TYPE_COMMENT = "comment"
 EVENT_TYPE_PULL_REQUEST = "pull_request"
 EVENT_TYPE_OTHER = "other"
 
+# ignore file names
+IGNORE_FILES_REGEX = os.getenv('IGNORE_FILES_REGEX', r'.*\.lock|requirements.txt') # ignore all lock files and requirements by default
 
 class GithubClient:
     '''Github API client'''
@@ -92,7 +95,7 @@ class GithubClient:
                 pr.title, pr.body, changes)
             completion = self.get_completion(prompt)
             if completion != '':
-                reviewComments = f'''@{pr.user.login} Thanks for your contributions!\n\n{completion}'''
+                reviewComments = f'''@{pr.user.login} PR has been reviewed successfully! Details are listed below:\n\n{completion}'''
                 pr.create_issue_comment(reviewComments)
             return
 
@@ -100,6 +103,10 @@ class GithubClient:
         files_changed = pr.get_files()
         reviews = []
         for file in files_changed:
+            if re.match(IGNORE_FILES_REGEX, file):
+                print(f'{file} has been ignored from analysis.')
+                continue
+
             file_changes = self.cut_changes(
                 file.previous_filename, file.filename, file.patch)
             prompt = self.openai_client.get_file_prompt(

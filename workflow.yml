@@ -41,14 +41,15 @@ jobs:
             --review-per-file $review_per_file \
             --comment-per-file $comment_per_file
         env: 
-          GITHUB_REPOSITORY: ${{ github.repository }} # ${{ github.event.pull_request.number }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY}}
-          model: 'gpt-3.5-turbo'
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          IGNORE_FILES_REGEX: ${{ secrets.IGNORE_FILES_REGEX }} # all lock files and requirements.txt will be ignored by default if nothing is provided here
+          model: ${{ secrets.GPT_MODEL }} # 'gpt-4-turbo'
           # OPENAI_API_BASE: 'gpt-4' # 'gpt-3.5-turbo'
-          blocking: 'False'
-          temperature: '0.2'
-          frequency_penalty: '0'
-          presence_penalty: '0'
-          review_per_file: 'False'
-          comment_per_file: 'True'
+          blocking: ${{ secrets.blocking | 'False' }}
+          temperature: ${{ secrets.temperature | '0.2' }} 
+          frequency_penalty: ${{ secrets.gpt_frequency_penalty | '0' }} 
+          presence_penalty: ${{ secrets.gpt_presence_penalty | '0' }} 
+          review_per_file: ${{ secrets.review_per_file | 'False' }}
+          comment_per_file: ${{ secrets.comment_per_file | 'False' }}
