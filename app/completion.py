@@ -42,9 +42,9 @@ class OpenAIClient:
             self.openai_kwargs = {'engine': self.model}
 
     @backoff.on_exception(backoff.expo,
-                          (openai.error.RateLimitError,
-                           openai.error.APIConnectionError,
-                           openai.error.ServiceUnavailableError),
+                          (openai.RateLimitError,
+                           openai.APIConnectionError,
+                           openai.InternalServerError),
                           max_time=300)
     def get_completion(self, prompt) -> str:
         if self.model.startswith("gpt-"):
