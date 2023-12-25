@@ -1,5 +1,5 @@
-backoff>=2.2.1
-openai>=0.27.0
-tiktoken>=0.2.0
-PyGithub>=2.1.1
-argparse>=1.4.0
+backoff==2.2.1
+openai==1.6.0
+tiktoken==0.5.2
+PyGithub==2.1.1
+argparse==1.4.0
