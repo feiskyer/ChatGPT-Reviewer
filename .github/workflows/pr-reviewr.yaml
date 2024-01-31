@@ -1,0 +1,22 @@
+name: PR Review
+
+on: [pull_request]
+
+
+jobs:
+  chatgpt-review:
+    name: PR Review
+    runs-on: ubuntu-latest
+    steps:
+    - uses: d0ntblink/test-reviwer
+      name: PR Review
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        # OPENAI_API_BASE: ${{ secrets.OPENAI_API_BASE }}
+      # Optional configurations:
+      # with:
+      #   model: "gpt-3.5-turbo"
+      #   temperature: 0.2
+      #   review_per_file: true
+      #   comment_per_file: true
