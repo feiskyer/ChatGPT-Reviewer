@@ -8,7 +8,7 @@ jobs:
     name: PR Review
     runs-on: ubuntu-latest
     steps:
-    - uses: d0ntblink/test-reviwer
+    - uses: feiskyer/ChatGPT-Reviewer@v0
       name: PR Review
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
